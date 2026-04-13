@@ -1,7 +1,35 @@
 import axios from 'axios';
 
 const configuredApiUrl = String(import.meta.env.VITE_API_URL || '').trim();
-const API_BASE_URL = configuredApiUrl || '/api';
+
+const normalizeApiBaseUrl = (rawUrl) => {
+  if (!rawUrl) {
+    return '/api';
+  }
+
+  const cleaned = rawUrl.replace(/\/+$/, '');
+
+  if (!/^https?:\/\//i.test(cleaned)) {
+    return cleaned;
+  }
+
+  try {
+    const parsed = new URL(cleaned);
+    const path = parsed.pathname.replace(/\/+$/, '');
+
+    // Most deployments set only a host (for example https://api.example.com).
+    // The backend routes are under /api, so default root paths to /api automatically.
+    if (!path || path === '/') {
+      parsed.pathname = '/api';
+    }
+
+    return parsed.toString().replace(/\/+$/, '');
+  } catch {
+    return cleaned;
+  }
+};
+
+const API_BASE_URL = normalizeApiBaseUrl(configuredApiUrl);
 
 if (import.meta.env.PROD && !configuredApiUrl) {
   // In production this usually means frontend is deployed without a backend API URL.
@@ -23,7 +51,7 @@ const buildApiConfigError = () => {
   const message =
     'API endpoint is misconfigured for this deployment. Set VITE_API_URL to your hosted backend URL (for example, https://your-api-domain.com/api).';
   const error = new Error(message);
-  error.response = { data: { message } };
+  error.response = { status: 404, data: { message } };
   return error;
 };
 
@@ -54,6 +82,14 @@ http.interceptors.response.use(
     return response;
   },
   (error) => {
+    const contentType = String(error?.response?.headers?.['content-type'] || '').toLowerCase();
+    const isHtmlError =
+      contentType.includes('text/html') || looksLikeHtmlDocument(error?.response?.data);
+
+    if (error?.response?.status === 404 && isHtmlError) {
+      return Promise.reject(buildApiConfigError());
+    }
+
     if (error?.response?.status === 401) {
       window.dispatchEvent(new CustomEvent('auth:expired'));
     }
