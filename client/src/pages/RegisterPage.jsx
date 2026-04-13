@@ -23,7 +23,11 @@ const RegisterPage = () => {
       await http.post('/auth/register', form);
       navigate('/login', { state: { message: 'Account created! Please sign in.' } });
     } catch (err) {
-      setError(err.response?.data?.message || 'Unable to register. Please try again.');
+      if (err?.response?.status === 400) {
+        setError('Unable to register with these details. Please check your input and try again.');
+      } else {
+        setError('Unable to register right now. Please try again later.');
+      }
     } finally {
       setSubmitting(false);
     }

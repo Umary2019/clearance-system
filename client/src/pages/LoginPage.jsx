@@ -32,7 +32,11 @@ const LoginPage = () => {
       login(response.data.token);
       navigate('/dashboard');
     } catch (err) {
-      setError(err.response?.data?.message || 'Unable to login. Check your credentials.');
+      if (err?.response?.status === 401) {
+        setError('Invalid email or password.');
+      } else {
+        setError('Unable to sign in right now. Please try again later.');
+      }
     } finally {
       setSubmitting(false);
     }
@@ -47,7 +51,11 @@ const LoginPage = () => {
       login(response.data.token);
       navigate('/dashboard');
     } catch (err) {
-      setError(err.response?.data?.message || 'Unable to verify MFA code');
+      if (err?.response?.status === 401) {
+        setError('Invalid MFA code.');
+      } else {
+        setError('Unable to verify MFA right now. Please try again later.');
+      }
     } finally {
       setSubmitting(false);
     }

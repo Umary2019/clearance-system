@@ -51,7 +51,13 @@ const buildApiConfigError = () => {
   const message =
     'API endpoint is misconfigured for this deployment. Set VITE_API_URL to your hosted backend URL (for example, https://your-api-domain.com/api).';
   const error = new Error(message);
-  error.response = { status: 404, data: { message } };
+  error.isApiConfigError = true;
+  error.response = { status: 404, data: {} };
+
+  // Keep deployment diagnostics in logs only, not in end-user UI.
+  // eslint-disable-next-line no-console
+  console.error(message);
+
   return error;
 };
 
