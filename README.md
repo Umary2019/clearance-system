@@ -88,8 +88,18 @@ npm run dev
 
 Optional frontend environment variable:
 
-- VITE_API_URL (defaults to http://localhost:5000/api)
+- VITE_API_URL (defaults to /api; set this to your hosted backend URL in production)
 - VITE_PROXY_TARGET (used by Vite dev proxy, defaults to http://localhost:5000)
+
+## Deployment Notes (Important)
+
+If the frontend and backend are deployed on different domains, registration/login will fail unless both sides are configured:
+
+- Frontend (for example on Netlify): set `VITE_API_URL=https://your-backend-domain.com/api`
+- Backend: set `CLIENT_URL=https://your-frontend-domain.com`
+- Backend: set `JWT_SECRET` in production (required for token signing)
+
+Without `VITE_API_URL`, static hosts typically serve `index.html` for `/api/*`, so auth requests never reach the backend.
 
 ## API Overview
 
