@@ -155,6 +155,7 @@ If you want the app to work by only deploying, use this exact order:
 	- `JWT_SECRET`
 	- `CLIENT_URL=https://your-app.vercel.app`
 	- `NODE_ENV=production`
+	- `MONGO_URI` must point to a cloud-hosted MongoDB instance such as Atlas, not `localhost`
 3. Deploy the repo on Vercel (root directory = repo root).
 4. Open `https://your-app.vercel.app/api/health` and confirm it returns JSON.
 5. Open the app and test register/login.
