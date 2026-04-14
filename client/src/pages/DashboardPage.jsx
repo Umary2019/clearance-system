@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import http from '../api/http';
+import { getApiBaseUrl } from '../api/baseUrl';
 import AppShell from '../components/AppShell';
 import { useAuth } from '../context/AuthContext';
 
@@ -9,7 +10,7 @@ const statusOptions = ['all', 'pending', 'approved', 'rejected'];
 
 const DashboardPage = () => {
   const { user, updateUser } = useAuth();
-  const reportBaseUrl = (import.meta.env.VITE_API_URL || '/api').replace(/\/$/, '');
+  const reportBaseUrl = getApiBaseUrl();
 
   const [request, setRequest] = useState(null);
   const [notifications, setNotifications] = useState([]);

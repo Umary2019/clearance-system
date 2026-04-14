@@ -14,3 +14,14 @@ The React Compiler is not enabled on this template because of its impact on dev 
 ## Expanding the ESLint configuration
 
 If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+
+## API URL Configuration
+
+The frontend resolves its backend base URL in this order:
+
+1. `VITE_API_URL`
+2. `window.__CLEARANCE_API_URL__`
+3. `<meta name="clearance-api-url" content="...">`
+4. `/api`
+
+In production, set one of the first three options to the deployed backend URL if the API is not hosted on the same origin as the frontend.

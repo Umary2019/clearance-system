@@ -1,41 +1,15 @@
 import axios from 'axios';
+import { getApiBaseUrl } from './baseUrl';
 
-const configuredApiUrl = String(import.meta.env.VITE_API_URL || '').trim();
+const API_BASE_URL = getApiBaseUrl();
 
-const normalizeApiBaseUrl = (rawUrl) => {
-  if (!rawUrl) {
-    return '/api';
-  }
+const isApiConfigured = API_BASE_URL !== '/api';
 
-  const cleaned = rawUrl.replace(/\/+$/, '');
-
-  if (!/^https?:\/\//i.test(cleaned)) {
-    return cleaned;
-  }
-
-  try {
-    const parsed = new URL(cleaned);
-    const path = parsed.pathname.replace(/\/+$/, '');
-
-    // Most deployments set only a host (for example https://api.example.com).
-    // The backend routes are under /api, so default root paths to /api automatically.
-    if (!path || path === '/') {
-      parsed.pathname = '/api';
-    }
-
-    return parsed.toString().replace(/\/+$/, '');
-  } catch {
-    return cleaned;
-  }
-};
-
-const API_BASE_URL = normalizeApiBaseUrl(configuredApiUrl);
-
-if (import.meta.env.PROD && !configuredApiUrl) {
+if (import.meta.env.PROD && !isApiConfigured) {
   // In production this usually means frontend is deployed without a backend API URL.
   // Requests to /api often return index.html on static hosts.
   // eslint-disable-next-line no-console
-  console.warn('VITE_API_URL is not set in production. API calls may fail.');
+  console.warn('API URL is not configured in production. Set VITE_API_URL, window.__CLEARANCE_API_URL__, or a meta tag named clearance-api-url to your backend URL.');
 }
 
 const looksLikeHtmlDocument = (value) => {
@@ -48,15 +22,16 @@ const looksLikeHtmlDocument = (value) => {
 };
 
 const buildApiConfigError = () => {
-  const message =
+  const diagnosticMessage =
     'API endpoint is misconfigured for this deployment. Set VITE_API_URL to your hosted backend URL (for example, https://your-api-domain.com/api).';
-  const error = new Error(message);
+  const userMessage = 'Unable to connect to the service right now. Please try again later.';
+  const error = new Error(userMessage);
   error.isApiConfigError = true;
-  error.response = { status: 404, data: {} };
+  error.response = { status: 404, data: { message: userMessage } };
 
   // Keep deployment diagnostics in logs only, not in end-user UI.
   // eslint-disable-next-line no-console
-  console.error(message);
+  console.error(diagnosticMessage);
 
   return error;
 };

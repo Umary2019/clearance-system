@@ -1,4 +1,4 @@
-# Student Clearance System
+																																																																																														# Student Clearance System
 
 A full-stack digital clearance workflow platform for universities and colleges.
 
@@ -96,6 +96,7 @@ Optional frontend environment variable:
 If the frontend and backend are deployed on different domains, registration/login will fail unless both sides are configured:
 
 - Frontend (for example on Netlify): set `VITE_API_URL=https://your-backend-domain.com/api`
+- Frontend can also read `window.__CLEARANCE_API_URL__` or `<meta name="clearance-api-url" content="...">` at runtime if you need to inject the API URL without rebuilding
 - Backend: set `CLIENT_URL=https://your-frontend-domain.com`
 - Backend: set `JWT_SECRET` in production (required for token signing)
 

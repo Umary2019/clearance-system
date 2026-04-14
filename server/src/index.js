@@ -7,6 +7,7 @@ const compression = require('compression');
 const rateLimit = require('express-rate-limit');
 const connectDB = require('./config/db');
 const path = require('path');
+const fs = require('fs');
 
 const authRoutes = require('./routes/auth.routes');
 const clearanceRoutes = require('./routes/clearance.routes');
@@ -20,6 +21,8 @@ dotenv.config();
 const app = express();
 
 const isProd = process.env.NODE_ENV === 'production';
+const clientDistPath = path.resolve(__dirname, '../../client/dist');
+const hasClientBuild = fs.existsSync(clientDistPath);
 
 app.use(
   cors({
@@ -51,6 +54,13 @@ app.use('/api/approvals', approvalRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/reports', reportRoutes);
 app.use('/api/notifications', notificationRoutes);
+
+if (isProd && hasClientBuild) {
+  app.use(express.static(clientDistPath));
+  app.get(/^\/(?!api).*/, (_req, res) => {
+    return res.sendFile(path.join(clientDistPath, 'index.html'));
+  });
+}
 
 app.use((req, res) => {
   return res.status(404).json({ message: `Route not found: ${req.method} ${req.originalUrl}` });
