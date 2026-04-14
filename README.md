@@ -120,6 +120,50 @@ Optional fallback: set `VITE_API_URL=https://your-backend-domain.com/api` in Net
 
 If `API_PROXY_TARGET` is missing, Netlify will return a JSON configuration error for `/api/*` calls.
 
+### Vercel Setup (Now Included)
+
+This repo now includes a Vercel config and serverless API function for `/api/*`.
+
+Files added:
+
+- `vercel.json` (build + SPA routing)
+- `api/index.js` (Express API handler)
+
+Deploy steps:
+
+1. Import this repository into Vercel.
+2. Keep the project root at repository root (do not switch root directory to `client`).
+3. In Vercel environment variables, set:
+	- `MONGO_URI`
+	- `JWT_SECRET`
+	- `CLIENT_URL=https://your-vercel-domain.vercel.app`
+	- `NODE_ENV=production`
+4. Deploy.
+
+Notes:
+
+- Frontend keeps using `/api` in production.
+- Backend and frontend run in one Vercel project.
+
+## Deploy-Only Runbook (Vercel Only)
+
+If you want the app to work by only deploying, use this exact order:
+
+1. Create a MongoDB database (Atlas or equivalent) and copy the connection string.
+2. In Vercel project env vars, set:
+	- `MONGO_URI`
+	- `JWT_SECRET`
+	- `CLIENT_URL=https://your-app.vercel.app`
+	- `NODE_ENV=production`
+3. Deploy the repo on Vercel (root directory = repo root).
+4. Open `https://your-app.vercel.app/api/health` and confirm it returns JSON.
+5. Open the app and test register/login.
+
+Final verification:
+
+- `https://your-app.vercel.app/api/health` should return backend JSON.
+- Login and register should no longer return 404 or API base URL errors.
+
 ## API Overview
 
 - POST /api/auth/register

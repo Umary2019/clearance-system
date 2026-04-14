@@ -1,0 +1,22 @@
+{
+  "buildCommand": "cd client && npm install && npm run build && cd ../server && npm install",
+  "outputDirectory": "client/dist",
+  "functions": {
+    "api/index.js": {
+      "runtime": "nodejs22.x"
+    }
+  },
+  "routes": [
+    {
+      "src": "/api/(.*)",
+      "dest": "/api/index.js"
+    },
+    {
+      "handle": "filesystem"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/index.html"
+    }
+  ]
+}
