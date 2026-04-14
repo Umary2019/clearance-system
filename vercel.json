@@ -1,14 +1,13 @@
 {
   "buildCommand": "cd client && npm install && npm run build && cd ../server && npm install",
   "outputDirectory": "client/dist",
-  "rewrites": [
+  "routes": [
     {
-      "source": "/api/(.*)",
-      "destination": "/api/[...path]"
+      "handle": "filesystem"
     },
     {
-      "source": "/(.*)",
-      "destination": "/index.html"
+      "src": "/(.*)",
+      "dest": "/index.html"
     }
   ]
 }
