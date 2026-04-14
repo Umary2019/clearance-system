@@ -95,12 +95,23 @@ Optional frontend environment variable:
 
 If the frontend and backend are deployed on different domains, registration/login will fail unless both sides are configured:
 
-- Frontend (for example on Netlify): set `VITE_API_URL=https://your-backend-domain.com/api`
+- Frontend (for example on Netlify), option A: set `VITE_API_URL=https://your-backend-domain.com/api`
+- Frontend (for example on Netlify), option B (recommended for this repo): set `API_PROXY_TARGET=https://your-backend-domain.com/api` and keep frontend API calls on `/api`
 - Frontend can also read `window.__CLEARANCE_API_URL__` or `<meta name="clearance-api-url" content="...">` at runtime if you need to inject the API URL without rebuilding
 - Backend: set `CLIENT_URL=https://your-frontend-domain.com`
 - Backend: set `JWT_SECRET` in production (required for token signing)
 
 Without `VITE_API_URL`, static hosts typically serve `index.html` for `/api/*`, so auth requests never reach the backend.
+
+### Netlify Proxy Setup (Now Included)
+
+This repo now includes a Netlify Function proxy and redirect that forwards `/api/*` to your backend. To use it:
+
+1. In Netlify environment variables, set `API_PROXY_TARGET=https://your-backend-domain.com/api`
+2. Redeploy the site
+3. Keep backend `CLIENT_URL` set to your Netlify app origin
+
+If `API_PROXY_TARGET` is missing, Netlify will return a JSON configuration error for `/api/*` calls.
 
 ## API Overview
 

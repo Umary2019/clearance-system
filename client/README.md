@@ -25,3 +25,11 @@ The frontend resolves its backend base URL in this order:
 4. `/api`
 
 In production, set one of the first three options to the deployed backend URL if the API is not hosted on the same origin as the frontend.
+
+## Netlify Hosting
+
+This project includes a Netlify proxy for `/api/*`.
+
+- Set `API_PROXY_TARGET=https://your-backend-domain.com/api` in Netlify environment variables.
+- Redeploy after setting the variable.
+- Keep frontend requests on `/api`.
