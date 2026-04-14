@@ -1,10 +1,10 @@
 const dotenv = require('dotenv');
-const connectDB = require('../server/src/config/db');
-const app = require('../server/src/app');
 
 dotenv.config({ path: './server/.env' });
 
 let dbConnectionPromise;
+let cachedConnectDB;
+let cachedApp;
 
 const getMissingConfig = () => {
   const missing = [];
@@ -21,11 +21,23 @@ const getMissingConfig = () => {
 };
 
 const ensureDbConnection = async () => {
+  if (!cachedConnectDB) {
+    cachedConnectDB = require('../server/src/config/db');
+  }
+
   if (!dbConnectionPromise) {
-    dbConnectionPromise = connectDB();
+    dbConnectionPromise = cachedConnectDB();
   }
 
   return dbConnectionPromise;
+};
+
+const getApp = () => {
+  if (!cachedApp) {
+    cachedApp = require('../server/src/app');
+  }
+
+  return cachedApp;
 };
 
 module.exports = async (req, res) => {
@@ -39,6 +51,7 @@ module.exports = async (req, res) => {
     }
 
     await ensureDbConnection();
+    const app = getApp();
     return app(req, res);
   } catch (error) {
     // eslint-disable-next-line no-console
