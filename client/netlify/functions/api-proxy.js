@@ -90,6 +90,16 @@ const getAllowedRequestHeaders = (headers) => {
 };
 
 exports.handler = async (event) => {
+  if ((event.httpMethod || '').toUpperCase() === 'OPTIONS') {
+    return {
+      statusCode: 204,
+      headers: {
+        allow: 'GET,POST,PUT,PATCH,DELETE,OPTIONS',
+      },
+      body: '',
+    };
+  }
+
   const targetBase = getProxyTarget();
 
   if (!targetBase) {
@@ -155,7 +165,12 @@ exports.handler = async (event) => {
   return {
     statusCode: upstream.status,
     headers: responseHeaders,
-    body: isBinary ? responseBody.toString('base64') : responseBody.toString('utf8'),
+    body:
+      method === 'HEAD' || responseBody.length === 0
+        ? ''
+        : isBinary
+          ? responseBody.toString('base64')
+          : responseBody.toString('utf8'),
     isBase64Encoded: isBinary,
   };
 };

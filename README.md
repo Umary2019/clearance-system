@@ -91,6 +91,11 @@ Optional frontend environment variable:
 - VITE_API_URL (defaults to /api; set this to your hosted backend URL in production)
 - VITE_PROXY_TARGET (used by Vite dev proxy, defaults to http://localhost:5000)
 
+Recommended local frontend `.env` values:
+
+- `VITE_API_URL=http://localhost:5000/api`
+- `VITE_PROXY_TARGET=http://localhost:5000`
+
 ## Deployment Notes (Important)
 
 If the frontend and backend are deployed on different domains, registration/login will fail unless both sides are configured:
@@ -110,6 +115,8 @@ This repo now includes a Netlify Function proxy and redirect that forwards `/api
 1. In Netlify environment variables, set `API_PROXY_TARGET=https://your-backend-domain.com/api`
 2. Redeploy the site
 3. Keep backend `CLIENT_URL` set to your Netlify app origin
+
+Optional fallback: set `VITE_API_URL=https://your-backend-domain.com/api` in Netlify if you want direct browser-to-backend calls instead of the proxy.
 
 If `API_PROXY_TARGET` is missing, Netlify will return a JSON configuration error for `/api/*` calls.
 
