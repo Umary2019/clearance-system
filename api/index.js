@@ -26,7 +26,11 @@ const ensureDbConnection = async () => {
   }
 
   if (!dbConnectionPromise) {
-    dbConnectionPromise = cachedConnectDB();
+    dbConnectionPromise = cachedConnectDB().catch((error) => {
+      // Allow later invocations to retry instead of pinning a rejected promise.
+      dbConnectionPromise = undefined;
+      throw error;
+    });
   }
 
   return dbConnectionPromise;
@@ -54,8 +58,17 @@ module.exports = async (req, res) => {
     const app = getApp();
     return app(req, res);
   } catch (error) {
+    const message = String(error?.message || 'Server bootstrap failed');
+
+    if (/bad auth|authentication failed/i.test(message)) {
+      return res.status(500).json({
+        message:
+          'MongoDB authentication failed. Verify Vercel MONGO_URI credentials (URL-encode special characters in username/password) and ensure your database network access allows Vercel.',
+      });
+    }
+
     // eslint-disable-next-line no-console
     console.error('Vercel API bootstrap failed:', error);
-    return res.status(500).json({ message: error.message || 'Server bootstrap failed' });
+    return res.status(500).json({ message });
   }
 };
