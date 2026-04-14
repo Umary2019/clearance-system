@@ -3,15 +3,6 @@ import { getApiBaseUrl } from './baseUrl';
 
 const API_BASE_URL = getApiBaseUrl();
 
-const isApiConfigured = API_BASE_URL !== '/api';
-
-if (import.meta.env.PROD && !isApiConfigured) {
-  // /api can be valid in production when a host-level proxy exists (for example Netlify redirects/functions).
-  // Keep this as an informational warning instead of implying guaranteed misconfiguration.
-  // eslint-disable-next-line no-console
-  console.warn('Using same-origin /api in production. Ensure your host proxies /api/* to the backend, or set VITE_API_URL/window.__CLEARANCE_API_URL__/meta clearance-api-url.');
-}
-
 const looksLikeHtmlDocument = (value) => {
   if (typeof value !== 'string') {
     return false;

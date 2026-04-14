@@ -14,6 +14,9 @@ const RegisterPage = () => {
   const [error, setError] = useState('');
   const [submitting, setSubmitting] = useState(false);
 
+  const getErrorMessage = (err, fallback) =>
+    err?.response?.data?.message || err?.message || fallback;
+
   const onSubmit = async (event) => {
     event.preventDefault();
     setSubmitting(true);
@@ -26,7 +29,7 @@ const RegisterPage = () => {
       if (err?.response?.status === 400) {
         setError('Unable to register with these details. Please check your input and try again.');
       } else {
-        setError('Unable to register right now. Please try again later.');
+        setError(getErrorMessage(err, 'Unable to register right now. Please try again later.'));
       }
     } finally {
       setSubmitting(false);

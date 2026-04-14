@@ -15,6 +15,9 @@ const LoginPage = () => {
   const [error, setError] = useState('');
   const [submitting, setSubmitting] = useState(false);
 
+  const getErrorMessage = (err, fallback) =>
+    err?.response?.data?.message || err?.message || fallback;
+
   const onSubmit = async (event) => {
     event.preventDefault();
     setSubmitting(true);
@@ -35,7 +38,7 @@ const LoginPage = () => {
       if (err?.response?.status === 401) {
         setError('Invalid email or password.');
       } else {
-        setError('Unable to sign in right now. Please try again later.');
+        setError(getErrorMessage(err, 'Unable to sign in right now. Please try again later.'));
       }
     } finally {
       setSubmitting(false);
@@ -54,7 +57,7 @@ const LoginPage = () => {
       if (err?.response?.status === 401) {
         setError('Invalid MFA code.');
       } else {
-        setError('Unable to verify MFA right now. Please try again later.');
+        setError(getErrorMessage(err, 'Unable to verify MFA right now. Please try again later.'));
       }
     } finally {
       setSubmitting(false);
