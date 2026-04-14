@@ -1,4 +1,4 @@
-																																																																																														# Student Clearance System
+								# Student Clearance System
 
 A full-stack digital clearance workflow platform for universities and colleges.
 
