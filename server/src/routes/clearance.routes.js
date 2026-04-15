@@ -10,9 +10,23 @@ const { createInitialApprovals } = require('../utils/clearance');
 
 const router = express.Router();
 
-const uploadsDir = path.join(process.cwd(), 'uploads');
-if (!fs.existsSync(uploadsDir)) {
-  fs.mkdirSync(uploadsDir, { recursive: true });
+const getUploadsDir = () => {
+  if (process.env.VERCEL) {
+    return path.join('/tmp', 'uploads');
+  }
+
+  return path.join(process.cwd(), 'uploads');
+};
+
+const uploadsDir = getUploadsDir();
+
+try {
+  if (!fs.existsSync(uploadsDir)) {
+    fs.mkdirSync(uploadsDir, { recursive: true });
+  }
+} catch (error) {
+  // eslint-disable-next-line no-console
+  console.warn(`Uploads directory is unavailable at ${uploadsDir}: ${error.message}`);
 }
 
 const storage = multer.diskStorage({
