@@ -60,6 +60,13 @@ module.exports = async (req, res) => {
   } catch (error) {
     const message = String(error?.message || 'Server bootstrap failed');
 
+    if (/contains unescaped characters|mongo_uri contains unescaped special characters/i.test(message)) {
+      return res.status(500).json({
+        message:
+          'MongoDB connection string is invalid. URL-encode special characters in username/password in MONGO_URI (for example @ as %40, : as %3A, / as %2F), then redeploy.',
+      });
+    }
+
     if (/bad auth|authentication failed/i.test(message)) {
       return res.status(500).json({
         message:
